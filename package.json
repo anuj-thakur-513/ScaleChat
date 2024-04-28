@@ -1,0 +1,27 @@
+{
+  "name": "scalechat-backend",
+  "version": "1.0.0",
+  "description": "A chat-app backend which is completely scalable on PROD level",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anuj-thakur-513/ScaleChat.git"
+  },
+  "author": "Anuj Thakur",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anuj-thakur-513/ScaleChat/issues"
+  },
+  "homepage": "https://github.com/anuj-thakur-513/ScaleChat#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1",
+    "socket.io": "^4.7.5"
+  }
+}
