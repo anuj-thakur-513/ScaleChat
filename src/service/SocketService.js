@@ -1,4 +1,5 @@
 const { Server } = require("socket.io");
+const { pub, sub } = require("./redis");
 
 class SocketService {
   #io;
@@ -22,7 +23,7 @@ class SocketService {
       });
 
       socket.on("disconnect", () => {
-        console.log(`socket_id: ${socket.id} disconnected`);
+        console.log(`Disconnected user with socket_id: ${socket.id}`);
       });
     });
   }
