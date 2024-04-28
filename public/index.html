@@ -17,14 +17,27 @@
       const messageInput = document.getElementById("message");
       const messageDisplay = document.getElementById("messageDisplay");
 
-      socket.on("event:message", (message) => {
-        messageDisplay.textContent += message + "\n";
-      });
-
-      sendBtn.addEventListener("click", (e) => {
+      // Function to handle sending messages
+      function sendMessage() {
         const message = messageInput.value;
         socket.emit("event:message", message);
         messageInput.value = ""; // Clear input field after sending message
+      }
+
+      // Event listener for clicking the "Send" button
+      sendBtn.addEventListener("click", (e) => {
+        sendMessage();
+      });
+
+      // Event listener for pressing Enter key
+      messageInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          sendMessage();
+        }
+      });
+
+      socket.on("event:message", (message) => {
+        messageDisplay.innerHTML += "• " + message + "<br>";
       });
     </script>
   </body>

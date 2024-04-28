@@ -17,7 +17,8 @@ class SocketService {
       );
 
       socket.on("event:message", (message) => {
-        console.log(`new message received: ${message}`);
+        console.log(`message received from ${socket.id}: ${message}`);
+        io.emit("event:message", message);
       });
 
       socket.on("disconnect", () => {
