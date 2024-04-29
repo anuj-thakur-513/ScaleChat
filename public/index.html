@@ -20,7 +20,7 @@
       // Function to handle sending messages
       function sendMessage() {
         const message = messageInput.value;
-        socket.emit("event:message", message);
+        socket.emit("send:message", message);
         messageInput.value = ""; // Clear input field after sending message
       }
 
@@ -36,7 +36,7 @@
         }
       });
 
-      socket.on("event:message", (message) => {
+      socket.on("message", (message) => {
         messageDisplay.innerHTML += "• " + message + "<br>";
       });
     </script>

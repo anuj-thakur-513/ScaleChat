@@ -17,13 +17,27 @@ class SocketService {
         `New user connected to the server with socket_id: ${socket.id}`
       );
 
-      socket.on("event:message", (message) => {
-        console.log(`message received from ${socket.id}: ${message}`);
-        io.emit("event:message", message);
+      // subscribe to MESSAGES on connection
+      sub.subscribe("MESSAGES");
+
+      socket.on("send:message", async (message) => {
+        // publish msg to redis
+        await pub.publish("MESSAGES", message);
       });
 
-      socket.on("disconnect", () => {
-        console.log(`Disconnected user with socket_id: ${socket.id}`);
+      // subscriber event
+      sub.on("message", (channel, message) => {
+        if (channel === "MESSAGES") {
+          console.log(`${socket.id}: ${message}`);
+          io.emit("message", message);
+        }
+      });
+
+      socket.on("disconnect", (reason) => {
+        console.log(`Disconnected socket_id: ${socket.id}, reason: ${reason}`);
+        // remove the subscriber for the current socket
+        sub.unsubscribe("MESSAGES");
+        sub.removeAllListeners("message");
       });
     });
   }
