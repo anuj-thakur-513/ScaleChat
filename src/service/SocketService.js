@@ -1,5 +1,7 @@
 const { Server } = require("socket.io");
 const { pub, sub } = require("./redis");
+const { prismaClient } = require("./prisma");
+const { produceMessage } = require("./kafka/producer");
 
 class SocketService {
   #io;
@@ -12,13 +14,13 @@ class SocketService {
     const io = this.io;
     console.log("Socket listeners init...");
 
-    io.on("connection", (socket) => {
+    io.on("connection", async (socket) => {
       console.log(
         `New user connected to the server with socket_id: ${socket.id}`
       );
 
       // subscribe to MESSAGES on connection
-      sub.subscribe("MESSAGES");
+      await sub.subscribe("MESSAGES");
 
       socket.on("send:message", async (message) => {
         // publish msg to redis
@@ -26,18 +28,20 @@ class SocketService {
       });
 
       // subscriber event
-      sub.on("message", (channel, message) => {
+      sub.on("message", async (channel, message) => {
         if (channel === "MESSAGES") {
           console.log(`${socket.id}: ${message}`);
           io.emit("message", message);
+          //TODO: add these messages into DB via Apache Kafka Service
+          await produceMessage(message);
         }
       });
 
-      socket.on("disconnect", (reason) => {
+      socket.on("disconnect", async (reason) => {
         console.log(`Disconnected socket_id: ${socket.id}, reason: ${reason}`);
         // remove the subscriber for the current socket
-        sub.unsubscribe("MESSAGES");
-        sub.removeAllListeners("message");
+        await sub.unsubscribe("MESSAGES");
+        await sub.removeAllListeners("message");
       });
     });
   }

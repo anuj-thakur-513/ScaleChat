@@ -5,4 +5,6 @@ const REDIS_OPTIONS = {
   password: process.env.AIVEN_REDIS_PASSWORD,
 };
 
-module.exports = { REDIS_OPTIONS };
+const KAFKA_MESSAGE_TOPIC = "MESSAGES";
+
+module.exports = { REDIS_OPTIONS, KAFKA_MESSAGE_TOPIC };
