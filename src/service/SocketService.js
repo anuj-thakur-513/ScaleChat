@@ -1,6 +1,6 @@
 const { Server } = require("socket.io");
 const { pub, sub } = require("./redis");
-const { prismaClient } = require("./prisma");
+const prisma = require("./prisma");
 const { produceMessage } = require("./kafka/producer");
 
 class SocketService {
