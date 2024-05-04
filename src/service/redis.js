@@ -1,5 +1,5 @@
 const Redis = require("ioredis");
-const { REDIS_OPTIONS } = require("../utils/constants");
+const { REDIS_OPTIONS } = require("../config/redis.config");
 
 const pub = new Redis(REDIS_OPTIONS);
 const sub = new Redis(REDIS_OPTIONS);
