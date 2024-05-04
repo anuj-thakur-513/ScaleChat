@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
 
-const generateToken = (user, isAccessToken) => {
+const generateToken = (userId, isAccessToken) => {
   let token;
   if (isAccessToken) {
     token = jwt.sign(
       {
-        id: user.id,
+        id: userId,
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
@@ -15,7 +15,7 @@ const generateToken = (user, isAccessToken) => {
   } else {
     token = jwt.sign(
       {
-        id: user.id,
+        id: userId,
       },
       process.env.REFRESH_TOKEN_SECRET,
       {
