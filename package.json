@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "kafka-admin": "node ./src/service/kafka/admin.js"
   },
   "repository": {
     "type": "git",
@@ -19,13 +20,16 @@
   },
   "homepage": "https://github.com/anuj-thakur-513/ScaleChat#readme",
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "prisma": "^5.13.0"
   },
   "dependencies": {
+    "@prisma/client": "^5.13.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "ioredis": "^5.4.1",
+    "kafkajs": "^2.2.4",
     "socket.io": "^4.7.5"
   }
 }

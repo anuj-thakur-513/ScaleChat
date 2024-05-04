@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  username         String    @unique
+  password         String
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  sentMessages     Message[] @relation("sentMessages")
+  receivedMessages Message[] @relation("receivedMessages")
+
+  @@map("users")
+}
+
+model Chat {
+  id           Int      @id @default(autoincrement())
+  participants Int[] // array of userIds who are included in the chat/conversation
+  messages     Int[] // array of message IDs which are there in the chat/conversation
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("chats")
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  sender     User     @relation(name: "sentMessages", fields: [senderId], references: [id])
+  senderId   Int      @map("sender_id")
+  receiver   User     @relation(name: "receivedMessages", fields: [receiverId], references: [id])
+  receiverId Int      @map("receiver_id")
+  message    String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("messages")
+}
