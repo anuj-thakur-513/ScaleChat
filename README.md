@@ -46,9 +46,9 @@ docker run -p 9092:9092 \
 confluentinc/cp-kafka
 ```
 
-### Change `.env.example` to `.env` and update the variables in the file
+#### Change `.env.example` to `.env` and update the variables in the file
 
-### Replace `./prisma/example_key.pem` with your own DB key
+#### Replace `./prisma/example_key.pem` with your own DB key
 
 ### Run Kafka Admin to create topic in your local Kafka Server
 
@@ -56,7 +56,7 @@ confluentinc/cp-kafka
 npm run kafka-admin
 ```
 
-### Spin up the Server on PORT 8000
+### Spin up the Server on PORT `8000`
 
 ```bash
 npm start or npm run dev
