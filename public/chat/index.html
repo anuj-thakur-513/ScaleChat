@@ -12,7 +12,30 @@
     />
   </head>
   <body>
-    <h1 class="text-bg-primary p-3 mb-4">Backend for a Scalable Chat Server</h1>
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+      <div class="container">
+        <a class="navbar-brand text-white" href="#">Scale Chat</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <button id="logoutBtn" class="btn btn-danger">Logout</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
     <div class="m-5">
       <div class="mb-3">
         <label for="message" class="form-label">Enter your Message</label>
@@ -28,6 +51,7 @@
       </button>
       <p id="messageDisplay"></p>
     </div>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -40,6 +64,7 @@
       const sendBtn = document.getElementById("sendBtn");
       const messageInput = document.getElementById("message");
       const messageDisplay = document.getElementById("messageDisplay");
+      const logoutBtn = document.getElementById("logoutBtn");
 
       // Function to handle sending messages
       function sendMessage() {
@@ -49,7 +74,7 @@
       }
 
       // Event listener for clicking the "Send" button
-      sendBtn.addEventListener("click", (e) => {
+      sendBtn.addEventListener("click", () => {
         sendMessage();
       });
 
@@ -62,6 +87,13 @@
 
       socket.on("message", (message) => {
         messageDisplay.innerHTML += "• " + message + "<br>";
+      });
+
+      // Event listener for logout button click
+      logoutBtn.addEventListener("click", () => {
+        // Redirect the user to the logout endpoint or perform logout actions
+        // For example, redirect to "/logout" or clear authentication tokens
+        window.location.href = "/logout"; // Change "/logout" to your actual logout endpoint
       });
     </script>
   </body>
