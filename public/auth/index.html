@@ -189,7 +189,7 @@
           const loginUsername = document.getElementById("loginUsername").value;
           const loginPassword = document.getElementById("loginPassword").value;
 
-          fetch("/v1/auth/login", {
+          fetch("/v1/user/login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -228,7 +228,7 @@
           const signupPassword =
             document.getElementById("signupPassword").value;
 
-          fetch("/v1/auth/signup", {
+          fetch("/v1/user/signup", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
