@@ -91,9 +91,24 @@
 
       // Event listener for logout button click
       logoutBtn.addEventListener("click", () => {
-        // Redirect the user to the logout endpoint or perform logout actions
-        // For example, redirect to "/logout" or clear authentication tokens
-        window.location.href = "/logout"; // Change "/logout" to your actual logout endpoint
+        fetch("/v1/user/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network Response was not Ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            window.location.reload();
+          })
+          .catch((error) => {
+            alert("Internal Server Error");
+          });
       });
     </script>
   </body>

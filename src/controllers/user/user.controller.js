@@ -113,4 +113,18 @@ const handleUserLogin = asyncHandler(async (req, res) => {
     );
 });
 
-module.exports = { handleUserSignup, handleUserLogin };
+const handleUserLogout = asyncHandler(async (req, res) => {
+  const user = req.user;
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { refreshToken: "" },
+  });
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", AUTH_COOKIE_OPTIONS)
+    .clearCookie("refreshToken", AUTH_COOKIE_OPTIONS)
+    .json(new ApiResponse(200, {}, "Logged Out Successfully"));
+});
+
+module.exports = { handleUserSignup, handleUserLogin, handleUserLogout };
