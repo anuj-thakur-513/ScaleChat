@@ -3,7 +3,7 @@ const asyncHandler = require("../../utils/asyncHandler");
 const { generateToken } = require("../../utils/jwt");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
-const { hashPassword } = require("../../utils/bcrypt");
+const { hashPassword, comparePassword } = require("../../utils/bcrypt");
 const { AUTH_COOKIE_OPTIONS } = require("../../config/cookies.config");
 
 // helper method to generate tokens
@@ -66,4 +66,51 @@ const handleUserSignup = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, { user: user }, "user created successfully"));
 });
 
-module.exports = { handleUserSignup };
+const handleUserLogin = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+  if ([username, password].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "Username and Password are required fields");
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { username: username },
+  });
+
+  if (!existingUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const isPasswordMatched = await comparePassword(
+    password,
+    existingUser.password
+  );
+
+  if (!isPasswordMatched) {
+    throw new ApiError(401, "Incorrect Password");
+  }
+
+  const { generatedAccessToken, generatedRefreshToken } = await generateTokens(
+    existingUser.id
+  );
+
+  return res
+    .status(200)
+    .cookie("accessToken", generatedAccessToken, AUTH_COOKIE_OPTIONS)
+    .cookie("refreshToken", generatedRefreshToken, AUTH_COOKIE_OPTIONS)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: {
+            id: existingUser.id,
+            username: existingUser.username,
+            createdAt: existingUser.createdAt,
+            updatedAt: existingUser.updatedAt,
+          },
+        },
+        "Logged In Successfully"
+      )
+    );
+});
+
+module.exports = { handleUserSignup, handleUserLogin };
