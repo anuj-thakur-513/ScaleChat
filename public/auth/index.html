@@ -50,7 +50,7 @@
                   role="tabpanel"
                   aria-labelledby="login-tab"
                 >
-                  <form>
+                  <form id="loginForm">
                     <div class="mb-3">
                       <label for="loginUsername" class="form-label"
                         >Username</label
@@ -82,7 +82,7 @@
                   role="tabpanel"
                   aria-labelledby="signup-tab"
                 >
-                  <form>
+                  <form id="signupForm">
                     <div class="mb-3">
                       <label for="signupUsername" class="form-label"
                         >Username</label
@@ -176,16 +176,77 @@
 
         // Event listener for login form submission
         loginForm.addEventListener("submit", function (event) {
+          event.preventDefault();
           if (!validateLoginForm()) {
-            event.preventDefault();
+            return;
           }
+
+          const loginUsername = document.getElementById("loginUsername").value;
+          const loginPassword = document.getElementById("loginPassword").value;
+
+          fetch("/v1/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: loginUsername,
+              password: loginPassword,
+            }),
+          })
+            .then((response) => {
+              console.log(response);
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Handle successful login response here
+              window.location.reload();
+            })
+            .catch((error) => {
+              // Handle error
+              alert("Internal Server Error");
+            });
         });
 
         // Event listener for signup form submission
         signupForm.addEventListener("submit", function (event) {
+          event.preventDefault();
           if (!validateSignupForm()) {
-            event.preventDefault();
+            return;
           }
+
+          const signupUsername =
+            document.getElementById("signupUsername").value;
+          const signupPassword =
+            document.getElementById("signupPassword").value;
+
+          fetch("/v1/auth/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: signupUsername,
+              password: signupPassword,
+            }),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Handle successful signup response here
+              window.location.reload();
+            })
+            .catch((error) => {
+              // Handle error
+              alert("Internal Server Error");
+            });
         });
       });
     </script>
