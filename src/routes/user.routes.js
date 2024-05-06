@@ -3,13 +3,18 @@ const {
   handleUserSignup,
   handleUserLogin,
   handleUserLogout,
-} = require("../controllers/user/user.controller");
+} = require("../controllers/user/userAuth.controller");
 const verifyToken = require("../middlewares/auth.middleware");
+const {
+  handleGetAllUsers,
+} = require("../controllers/user/userDetails.controller");
 
-const authRouter = Router();
+const userRouter = Router();
 
-authRouter.post("/signup", handleUserSignup);
-authRouter.post("/login", handleUserLogin);
-authRouter.post("/logout", verifyToken, handleUserLogout);
+userRouter.post("/signup", handleUserSignup);
+userRouter.post("/login", handleUserLogin);
+userRouter.post("/logout", verifyToken, handleUserLogout);
 
-module.exports = authRouter;
+userRouter.get("/all", verifyToken, handleGetAllUsers);
+
+module.exports = userRouter;
