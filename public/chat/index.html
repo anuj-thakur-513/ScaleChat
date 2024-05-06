@@ -10,6 +10,43 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <style>
+      .profile-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #007bff;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #chatWindow {
+        max-height: 400px; /* Adjust as needed */
+        overflow-y: auto;
+        position: relative;
+      }
+      #chatHeader {
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        padding: 10px;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+      }
+      #messageInputContainer {
+        position: sticky;
+        bottom: 0;
+        background-color: #fff;
+        padding: 10px;
+        z-index: 1;
+      }
+      #messageDisplay {
+        padding-bottom: 10px; /* Adjust to accommodate message input container */
+      }
+    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-primary">
@@ -36,27 +73,40 @@
       </div>
     </nav>
 
-    <div class="m-5">
-      <div class="mb-3">
-        <label for="message" class="form-label">Enter your Message</label>
-        <input
-          type="text"
-          class="form-control"
-          id="message"
-          placeholder="Enter your message..."
-        />
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-3">
+          <h3 class="mb-3">Users</h3>
+          <ul class="list-group" id="userList">
+            <!-- Users will be dynamically added here -->
+          </ul>
+        </div>
+        <div class="col-md-9">
+          <div class="m-5" id="chatWindow" style="display: none">
+            <div id="chatHeader"></div>
+            <div
+              id="messageDisplay"
+              style="height: 200px; overflow-y: auto"
+            ></div>
+            <div id="messageInputContainer">
+              <div class="input-group m-2">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="message"
+                  placeholder="Enter your message..."
+                />
+                <button id="sendBtn" type="button" class="btn btn-primary">
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <button id="sendBtn" type="button" class="btn btn-primary mb-4">
-        Send
-      </button>
-      <p id="messageDisplay"></p>
     </div>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <!-- JS CODE STARTS HERE -->
     <script>
@@ -65,12 +115,28 @@
       const messageInput = document.getElementById("message");
       const messageDisplay = document.getElementById("messageDisplay");
       const logoutBtn = document.getElementById("logoutBtn");
+      const userList = document.getElementById("userList");
+      const chatWindow = document.getElementById("chatWindow");
+      const chatHeader = document.getElementById("chatHeader");
 
       // Function to handle sending messages
       function sendMessage() {
         const message = messageInput.value;
         socket.emit("send:message", message);
         messageInput.value = ""; // Clear input field after sending message
+      }
+
+      // Function to scroll to the bottom of the message display container
+      function scrollToBottom() {
+        messageDisplay.scrollTop = messageDisplay.scrollHeight;
+      }
+
+      // Adjust the height of the message display container to avoid overlapping with the message input container
+      function adjustMessageDisplayHeight() {
+        const messageInputContainerHeight = document.getElementById(
+          "messageInputContainer"
+        ).offsetHeight;
+        messageDisplay.style.maxHeight = `calc(100% - ${messageInputContainerHeight}px)`;
       }
 
       // Event listener for clicking the "Send" button
@@ -87,6 +153,8 @@
 
       socket.on("message", (message) => {
         messageDisplay.innerHTML += "• " + message + "<br>";
+        scrollToBottom(); // Scroll to the bottom when a new message is added
+        adjustMessageDisplayHeight(); // Adjust the message display height after adding a new message
       });
 
       // Event listener for logout button click
@@ -110,6 +178,56 @@
             alert("Internal Server Error");
           });
       });
+
+      // Fetch users and populate the user list
+      fetch("/v1/user/all")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network Response was not Ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const users = data.data.users;
+          users.forEach((user) => {
+            const listItem = document.createElement("li");
+            listItem.classList.add("list-group-item");
+            listItem.style.cursor = "pointer"; // Add pointer cursor to indicate clickable
+            const firstLetter = user.username.charAt(0).toUpperCase();
+            listItem.innerHTML = `
+  <div class="d-flex align-items-center">
+    <div class="profile-icon me-3">${firstLetter}</div>
+    <div>${user.username}</div>
+  </div>
+`;
+            listItem.addEventListener("click", () => {
+              // Open chat screen for this user
+              openChat(user);
+            });
+            userList.appendChild(listItem);
+          });
+        })
+        .catch((error) => {
+          alert("Failed to fetch users");
+        });
+
+      // Function to open chat screen for a user
+      function openChat(user) {
+        // Display the chat window
+        chatWindow.style.display = "block";
+        // Update the chat header with user's icon and full username
+        const firstLetter = user.username.charAt(0).toUpperCase();
+        chatHeader.innerHTML = `
+<div class="profile-icon me-3">${firstLetter}</div>
+<div>${user.username}</div>
+`;
+      }
+
+      // Adjust message display height when the window is resized
+      window.addEventListener("resize", adjustMessageDisplayHeight);
+
+      // Initially adjust message display height
+      adjustMessageDisplayHeight();
     </script>
   </body>
 </html>
