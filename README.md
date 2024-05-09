@@ -6,6 +6,8 @@ Scale Chat is a scalable chat app backend service utilizing Redis to enhance the
 
 ## Architecture
 
+![](/github_assets/architecture.png)
+
 ### DB
 
 ![](/github_assets/DB%20Diagram.jpg)
