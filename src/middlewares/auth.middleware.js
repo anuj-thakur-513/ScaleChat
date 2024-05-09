@@ -12,8 +12,14 @@ const verifyToken = asyncHandler(async (req, res, next) => {
   if (!accessToken) {
     return res.status(401).sendFile(path.resolve("./public/auth/index.html"));
   }
+  // required for static page loading -> not required when using a full fledged front-end
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+  } catch (error) {
+    return res.status(401).sendFile(path.resolve("./public/auth/index.html"));
+  }
 
-  const decodedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
   const user = await prisma.user.findUnique({
     where: { id: decodedToken.id },
     select: {
