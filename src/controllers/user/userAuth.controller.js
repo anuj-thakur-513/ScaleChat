@@ -61,6 +61,7 @@ const handleUserSignup = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
+    .cookie("userId", user.id, AUTH_COOKIE_OPTIONS)
     .cookie("accessToken", generatedAccessToken, AUTH_COOKIE_OPTIONS)
     .cookie("refreshToken", generatedRefreshToken, AUTH_COOKIE_OPTIONS)
     .json(new ApiResponse(201, { user: user }, "user created successfully"));
@@ -95,6 +96,7 @@ const handleUserLogin = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
+    .cookie("userId", existingUser.id, AUTH_COOKIE_OPTIONS)
     .cookie("accessToken", generatedAccessToken, AUTH_COOKIE_OPTIONS)
     .cookie("refreshToken", generatedRefreshToken, AUTH_COOKIE_OPTIONS)
     .json(
@@ -122,6 +124,7 @@ const handleUserLogout = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
+    .clearCookie("userId", AUTH_COOKIE_OPTIONS)
     .clearCookie("accessToken", AUTH_COOKIE_OPTIONS)
     .clearCookie("refreshToken", AUTH_COOKIE_OPTIONS)
     .json(new ApiResponse(200, {}, "Logged Out Successfully"));
