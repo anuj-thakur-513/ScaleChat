@@ -1,14 +1,11 @@
 const { Server } = require("socket.io");
 const http = require("http");
-const app = require("../app");
+const express = require("express");
 const { redis } = require("../service/redis");
 
+const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-
-const getSocketId = async (userId) => {
-  return await redis.get(`userSocketMap:${userId}`);
-};
 
 io.on("connection", async (socket) => {
   console.log(`New user connected to the server with socket_id: ${socket.id}`);
@@ -23,7 +20,6 @@ io.on("connection", async (socket) => {
     }
   }
   await redis.set(`userSocketMap:${userId}`, socket.id);
-  console.log(userId);
 
   socket.on("disconnect", async () => {
     console.log("user disconnected", socket.id);
@@ -31,4 +27,4 @@ io.on("connection", async (socket) => {
   });
 });
 
-module.exports = { server, io, getSocketId };
+module.exports = { server, io, app };
