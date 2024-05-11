@@ -11,6 +11,10 @@ const init = async () => {
           topic: KAFKA_MESSAGE_TOPIC,
           numPartitions: 1,
         },
+        {
+          topic: KAFKA_CHAT_TOPIC,
+          numPartitions: 1,
+        },
       ],
     });
     await admin.disconnect();

@@ -1,11 +1,31 @@
 const { Server } = require("socket.io");
 const http = require("http");
 const express = require("express");
-const { redis } = require("../service/redis");
+const { redis, sub } = require("../service/redis");
+const { REDIS_MESSAGE_CHANNEL } = require("../utils/constants");
+const { channel } = require("diagnostics_channel");
+const { getSocketId } = require("../utils/socketManager");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
+
+// subscribing to REDIS message channel on server start
+sub.subscribe(REDIS_MESSAGE_CHANNEL);
+sub.on("message", async (channel, receivedMessage) => {
+  if (channel === REDIS_MESSAGE_CHANNEL) {
+    const { receiverId, senderId, message } = JSON.parse(receivedMessage);
+    console.log(
+      `receiverId: ${receiverId}, senderId: ${senderId}, message: ${message}`
+    );
+    const senderSocketId = await getSocketId(senderId);
+    const receiverSocketId = await getSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", message);
+    }
+    io.to(senderSocketId).emit("newMessage", message);
+  }
+});
 
 io.on("connection", async (socket) => {
   console.log(`New user connected to the server with socket_id: ${socket.id}`);

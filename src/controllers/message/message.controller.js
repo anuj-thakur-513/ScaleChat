@@ -1,23 +1,20 @@
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiResponse = require("../../utils/ApiResponse");
-const { io } = require("../../service/socket");
-const { getSocketId } = require("../../utils/socketManager");
+const { pub } = require("../../service/redis");
 const prisma = require("../../service/prisma");
+const { REDIS_MESSAGE_CHANNEL } = require("../../utils/constants");
 
 const handleSendMessage = asyncHandler(async (req, res) => {
   const { message } = req.body;
   const receiverId = parseInt(req.params.receiverId);
   const senderId = req.user.id;
-  // TODO 1: add socket support in order to emit messages
-  const receiverSocketId = await getSocketId(receiverId);
-  const senderSocketId = await getSocketId(senderId);
-  console.log(`receiverSocketId: ${receiverSocketId}`);
-  if (receiverSocketId) {
-    io.to(receiverSocketId).emit("newMessage", message);
-  }
-  io.to(senderSocketId).emit("newMessage", message);
 
-  // TODO 2: here we have to dump the data to Kafka and then further add the data to DB
+  await pub.publish(
+    REDIS_MESSAGE_CHANNEL,
+    JSON.stringify({ receiverId, senderId, message })
+  );
+
+  // TODO2: here we have to dump the data to Kafka and then further add the data to DB
   let chat = await prisma.chat.findFirst({
     where: { participants: { hasEvery: [senderId, receiverId] } },
   });
