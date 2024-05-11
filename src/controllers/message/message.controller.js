@@ -1,17 +1,24 @@
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiResponse = require("../../utils/ApiResponse");
-const SocketService = require("../../service/SocketService");
+const { io } = require("../../service/socket");
+const { getSocketId } = require("../../utils/socketManager");
 const prisma = require("../../service/prisma");
 
 const handleSendMessage = asyncHandler(async (req, res) => {
   const { message } = req.body;
-  const { receiverId } = req.params;
+  const receiverId = parseInt(req.params.receiverId);
   const senderId = req.user.id;
-
   // TODO 1: add socket support in order to emit messages
+  const receiverSocketId = await getSocketId(receiverId);
+  const senderSocketId = await getSocketId(senderId);
+  console.log(`receiverSocketId: ${receiverSocketId}`);
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("newMessage", message);
+  }
+  io.to(senderSocketId).emit("newMessage", message);
 
   // TODO 2: here we have to dump the data to Kafka and then further add the data to DB
-  let chat = await prisma.chat.findUnique({
+  let chat = await prisma.chat.findFirst({
     where: { participants: { hasEvery: [senderId, receiverId] } },
   });
 

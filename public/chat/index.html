@@ -118,11 +118,25 @@
       const userList = document.getElementById("userList");
       const chatWindow = document.getElementById("chatWindow");
       const chatHeader = document.getElementById("chatHeader");
+      let receiverId;
 
       // Function to handle sending messages
       function sendMessage() {
         const message = messageInput.value;
-        socket.emit("send:message", message);
+        // socket.emit("send:message", message);
+        fetch(`/v1/messages/${receiverId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: message }),
+        }).then((response) => {
+          if (!response.ok) {
+            console.log(
+              `error sending the message:\n ${JSON.stringify(response)}`
+            );
+          }
+        });
         messageInput.value = ""; // Clear input field after sending message
       }
 
@@ -151,7 +165,7 @@
         }
       });
 
-      socket.on("message", (message) => {
+      socket.on("newMessage", (message) => {
         messageDisplay.innerHTML += "• " + message + "<br>";
         scrollToBottom(); // Scroll to the bottom when a new message is added
         adjustMessageDisplayHeight(); // Adjust the message display height after adding a new message
@@ -215,6 +229,7 @@
       function openChat(user) {
         // Display the chat window
         chatWindow.style.display = "block";
+        receiverId = user.id;
         // Update the chat header with user's icon and full username
         const firstLetter = user.username.charAt(0).toUpperCase();
         chatHeader.innerHTML = `
