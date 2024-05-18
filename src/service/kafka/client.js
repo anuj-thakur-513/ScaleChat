@@ -1,9 +1,6 @@
 const { Kafka } = require("kafkajs");
-require("dotenv").config();
+const { KAFKA_OPTIONS } = require("../../config/kafka.config");
 
-const kafka = new Kafka({
-  brokers: [`${process.env.LOCAL_HOST}:9092`],
-  clientId: "scalable-chat-server",
-});
+const kafka = new Kafka(KAFKA_OPTIONS);
 
 module.exports = kafka;

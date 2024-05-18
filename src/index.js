@@ -5,6 +5,7 @@ const v1Router = require("./routes/version1.routes");
 const cookieParser = require("cookie-parser");
 const verifyToken = require("./middlewares/auth.middleware");
 const { server, app } = require("./service/socket");
+const { consumeMessage } = require("./service/kafka/consumer");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 8000;
@@ -27,6 +28,7 @@ app.get("/", verifyToken, (req, res) => {
 app.use("/v1", v1Router);
 
 const init = async () => {
+  consumeMessage();
   server.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
   });

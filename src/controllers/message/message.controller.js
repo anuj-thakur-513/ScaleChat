@@ -3,6 +3,7 @@ const ApiResponse = require("../../utils/ApiResponse");
 const { pub } = require("../../service/redis");
 const prisma = require("../../service/prisma");
 const { REDIS_MESSAGE_CHANNEL } = require("../../utils/constants");
+const { produceMessage } = require("../../service/kafka/producer");
 
 const handleSendMessage = asyncHandler(async (req, res) => {
   const { message } = req.body;
@@ -14,41 +15,25 @@ const handleSendMessage = asyncHandler(async (req, res) => {
     JSON.stringify({ receiverId, senderId, message })
   );
 
-  // TODO2: here we have to dump the data to Kafka and then further add the data to DB
-  let chat = await prisma.chat.findFirst({
-    where: { participants: { hasEvery: [senderId, receiverId] } },
-  });
-
-  if (!chat) {
-    chat = await prisma.chat.create({
-      data: {
-        participants: [senderId, receiverId],
-      },
-    });
-  }
-
-  const messageEntry = await prisma.message.create({
-    data: {
+  // get current time in order to get createdAt field for DB
+  const currentDate = new Date();
+  const isoString = currentDate.toISOString();
+  await produceMessage(
+    JSON.stringify({
       senderId: senderId,
       receiverId: receiverId,
-      message: message,
-    },
-  });
-
-  await prisma.chat.update({
-    where: { id: chat.id },
-    data: {
-      messages: { push: messageEntry.id },
-    },
-  });
+      receivedMessage: message,
+      createdAt: isoString,
+    })
+  );
 
   return res
     .status(201)
     .json(
       new ApiResponse(
         201,
-        { message: messageEntry },
-        "Message added to DB successfully"
+        { senderId: senderId, receiverId: receiverId, message: message },
+        "Message produced to Kafka Broker successfully"
       )
     );
 });

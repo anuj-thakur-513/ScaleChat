@@ -15,9 +15,6 @@ sub.subscribe(REDIS_MESSAGE_CHANNEL);
 sub.on("message", async (channel, receivedMessage) => {
   if (channel === REDIS_MESSAGE_CHANNEL) {
     const { receiverId, senderId, message } = JSON.parse(receivedMessage);
-    console.log(
-      `receiverId: ${receiverId}, senderId: ${senderId}, message: ${message}`
-    );
     const senderSocketId = await getSocketId(senderId);
     const receiverSocketId = await getSocketId(receiverId);
     if (receiverSocketId) {
