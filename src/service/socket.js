@@ -3,7 +3,6 @@ const http = require("http");
 const express = require("express");
 const { redis, sub } = require("../service/redis");
 const { REDIS_MESSAGE_CHANNEL } = require("../utils/constants");
-const { channel } = require("diagnostics_channel");
 const { getSocketId } = require("../utils/socketManager");
 
 const app = express();

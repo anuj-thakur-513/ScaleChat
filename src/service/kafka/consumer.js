@@ -16,7 +16,7 @@ const consumeMessage = async () => {
     if (messageBuffer.length === 0) return;
 
     const messagesToStore = [...messageBuffer];
-    console.log(messagesToStore);
+    console.log(`\n\nlogging messages in DB: ${messagesToStore.length()}`);
     messageBuffer.length = 0; // Clear the buffer
 
     try {
