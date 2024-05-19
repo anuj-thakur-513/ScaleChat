@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const verifyToken = require("./middlewares/auth.middleware");
 const { server, app } = require("./service/socket");
 const { consumeMessage } = require("./service/kafka/consumer");
+const { startCronJobs } = require("./service/cronjob");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 8000;
@@ -29,6 +30,7 @@ app.use("/v1", v1Router);
 
 const init = async () => {
   consumeMessage();
+  startCronJobs();
   server.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
   });
