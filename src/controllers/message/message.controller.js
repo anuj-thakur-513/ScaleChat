@@ -13,7 +13,7 @@ const handleSendMessage = asyncHandler(async (req, res) => {
   const currentDate = new Date();
   const isoString = currentDate.toISOString();
   const redisKey = generateMessageKey(senderId, receiverId);
-  const expirationTime = Date.now() + 10 * 60 * 1000; // 10 minutes from now
+  const expirationTime = Date.now() + 5 * 60 * 1000; // 5 minutes from now
 
   const redisMessageString = JSON.stringify({
     senderId: senderId,
