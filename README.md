@@ -2,8 +2,6 @@
 
 Scale Chat is a scalable chat app backend service utilizing Redis to enhance the scalability of web sockets, while leveraging Kafka to streamline the process of writing messages to the database, avoiding the need for individual write operations.
 
-## 🚧 This project is Under Dev 🚧
-
 ## Architecture
 
 ![](/github_assets/architecture.png)
@@ -30,6 +28,12 @@ cd ScaleChat
 
 ```bash
 npm install
+```
+
+### Install PM2
+
+```bash
+npm install pm2@latest -g
 ```
 
 ### Start Zookeper Container and expose PORT `2181`
@@ -62,4 +66,10 @@ npm run kafka-admin
 
 ```bash
 npm start or npm run dev
+```
+
+### Run the Application in Cluster Mode
+
+```bash
+pm2 start src/index.js -i max
 ```
