@@ -10,6 +10,74 @@ Scale Chat is a scalable chat app backend service utilizing Redis to enhance the
 
 ![](/github_assets/DB%20Diagram.jpg)
 
+## Folder Structure
+
+```
+.
+├── README.md
+├── github_assets
+│   ├── DB Diagram.jpg
+│   └── architecture.png
+├── package-lock.json
+├── package.json
+├── prisma
+│   ├── ca.pem
+│   ├── example_key.pem
+│   ├── migrations
+│   │   ├── 20240502172518_init
+│   │   │   └── migration.sql
+│   │   ├── 20240504090739_init
+│   │   │   └── migration.sql
+│   │   ├── 20240504092402_update_tables
+│   │   │   └── migration.sql
+│   │   ├── 20240504105700_update_users_table
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
+├── public
+│   ├── auth
+│   │   └── index.html
+│   └── chat
+│       └── index.html
+└── src
+    ├── config
+    │   ├── cookies.config.js
+    │   ├── kafka.config.js
+    │   └── redis.config.js
+    ├── controllers
+    │   ├── message
+    │   │   └── message.controller.js
+    │   └── user
+    │       ├── userAuth.controller.js
+    │       └── userDetails.controller.js
+    ├── index.js
+    ├── middlewares
+    │   └── auth.middleware.js
+    ├── routes
+    │   ├── message.routes.js
+    │   ├── user.routes.js
+    │   └── version1.routes.js
+    ├── service
+    │   ├── cronJob.js
+    │   ├── kafka
+    │   │   ├── admin.js
+    │   │   ├── client.js
+    │   │   ├── consumer.js
+    │   │   └── producer.js
+    │   ├── prisma.js
+    │   ├── redis.js
+    │   └── socket.js
+    └── utils
+        ├── ApiError.js
+        ├── ApiResponse.js
+        ├── asyncHandler.js
+        ├── bcrypt.js
+        ├── constants.js
+        ├── generateChatPair.js
+        ├── jwt.js
+        └── socketManager.js
+```
+
 ## Run Locally
 
 ### Clone the project
