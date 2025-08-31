@@ -9,7 +9,6 @@ const { AUTH_COOKIE_OPTIONS } = require("../../config/cookies.config");
 // helper method to generate tokens
 const generateTokens = async (userId) => {
   try {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
     const generatedAccessToken = generateToken(userId, true);
     const generatedRefreshToken = generateToken(userId, false);
 
@@ -55,9 +54,7 @@ const handleUserSignup = asyncHandler(async (req, res) => {
     },
   });
 
-  const { generatedAccessToken, generatedRefreshToken } = await generateTokens(
-    user.id
-  );
+  const { generatedAccessToken, generatedRefreshToken } = await generateTokens(user.id);
 
   return res
     .status(201)
@@ -81,18 +78,13 @@ const handleUserLogin = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  const isPasswordMatched = await comparePassword(
-    password,
-    existingUser.password
-  );
+  const isPasswordMatched = await comparePassword(password, existingUser.password);
 
   if (!isPasswordMatched) {
     throw new ApiError(401, "Incorrect Password");
   }
 
-  const { generatedAccessToken, generatedRefreshToken } = await generateTokens(
-    existingUser.id
-  );
+  const { generatedAccessToken, generatedRefreshToken } = await generateTokens(existingUser.id);
 
   return res
     .status(200)
