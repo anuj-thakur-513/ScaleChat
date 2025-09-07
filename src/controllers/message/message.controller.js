@@ -66,9 +66,7 @@ const handleGetMessages = asyncHandler(async (req, res) => {
 
   // Fetch non-expired messages from Redis
   const redisMessages = await redis.zrangebyscore(redisKey, now, "+inf");
-  const parsedRedisMessages = redisMessages
-    ? redisMessages.map((msg) => JSON.parse(msg))
-    : [];
+  const parsedRedisMessages = redisMessages ? redisMessages.map((msg) => JSON.parse(msg)) : [];
 
   const chat = await prisma.chat.findFirst({
     where: { participants: { hasEvery: [receiverId, senderId] } },
@@ -98,13 +96,7 @@ const handleGetMessages = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { messages: allMessages },
-        "messages fetched successfully"
-      )
-    );
+    .json(new ApiResponse(200, { messages: allMessages }, "messages fetched successfully"));
 });
 
 module.exports = { handleSendMessage, handleGetMessages };
